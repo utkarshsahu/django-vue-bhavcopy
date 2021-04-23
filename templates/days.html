@@ -1,0 +1,21 @@
+{% extends 'masterpage.html' %}
+{% block content %}
+<div id="app">
+    <p> [[ title ]] </p>
+    <form action="/submit/" method="post">
+        {% csrf_token %}
+        {{ f }}
+    <input type="submit" value="Submit">
+</form>
+</div>
+<script>
+new Vue({
+  delimiters: ['[[', ']]'],
+  el: '#app',
+  data: {
+    title: 'Bhavcopy downloader',
+    days: [1,2,3]
+  }
+})
+</script>
+{% endblock %}
