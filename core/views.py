@@ -52,7 +52,12 @@ def index(request):
             with zipfile.ZipFile('EQ{}.zip'.format(rep), 'r') as zip_ref:
                 zip_ref.extractall('.')
             print(os.listdir('.'))
-            df = pd.read_csv('./EQ{}.csv'.format(rep))
+            if os.path.exists('EQ{}.csv'.format(rep)):
+                print('normal')
+                df = pd.read_csv('./EQ{}.csv'.format(rep))
+            else:
+                print('upper!')
+                df = pd.read_csv('./EQ{}.CSV'.format(rep))
 
             for _, row in df.iterrows():
                 r.hmset('{}:{}'.format(rep, row['SC_NAME'].strip()),
