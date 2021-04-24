@@ -10,6 +10,9 @@
     {% if link %}
     <a href = "{{ link }}">Download</a>
     {%endif%}
+    {%if df %}
+        {{ df|safe }}
+    {%endif%}
 </div>
 <script>
 new Vue({
