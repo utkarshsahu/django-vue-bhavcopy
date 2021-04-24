@@ -49,10 +49,10 @@ def index(request):
             with open('./exp/EQ{}.zip'.format(rep), 'wb') as f:
                 f.write(response.content)
 
-            with zipfile.ZipFile('./exp/EQ{}.zip'.format(rep), 'r') as zip_ref:
+            with zipfile.ZipFile('EQ{}.zip'.format(rep), 'r') as zip_ref:
                 zip_ref.extractall('./exp')
 
-            df = pd.read_csv('./exp/EQ{}.csv'.format(rep))
+            df = pd.read_csv('EQ{}.csv'.format(rep))
 
             for _, row in df.iterrows():
                 r.hmset('{}:{}'.format(rep, row['SC_NAME'].strip()),
@@ -65,8 +65,8 @@ def index(request):
             # df_html = df[['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE']].to_html()
             all_stocks = df[['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE']].T.to_dict().values()
 
-            os.remove('./exp/EQ{}.csv'.format(rep))
-            os.remove('./exp/EQ{}.zip'.format(rep))
+            os.remove('EQ{}.csv'.format(rep))
+            os.remove('EQ{}.zip'.format(rep))
 
     else:
         form = DateForm()
