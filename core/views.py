@@ -70,7 +70,13 @@ def index(request):
             # df_html = df[['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE']].to_html()
             all_stocks = df[['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE']].T.to_dict().values()
 
-            os.remove('EQ{}.csv'.format(rep))
+            # os.remove('EQ{}.csv'.format(rep))
+            if os.path.exists('EQ{}.csv'.format(rep)):
+                # print('normal')
+                os.remove('EQ{}.csv'.format(rep))
+            else:
+                # print('upper!')
+                os.remove('EQ{}.CSV'.format(rep))
             os.remove('EQ{}.zip'.format(rep))
 
     else:
