@@ -1,10 +1,10 @@
 {% extends 'masterpage.html' %}
 {% block content %}
 <div id="app">
-    <p> [[ title ]] </p>
+    <h2> [[ title ]] </h2>
     <form action="/" method="post">
         {% csrf_token %}
-        {{ f }}
+        {{ f.as_table }}
         <input type="submit" value="Load CSV">
     </form>
     {% if not errorText %}
