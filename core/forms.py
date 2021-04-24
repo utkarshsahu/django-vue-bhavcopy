@@ -15,7 +15,9 @@ class DateForm(forms.Form):
         date = cleaned_data.get('date')
 
         try:
-            datetime(int(year), int(month), int(date))
+            d = datetime(int(year), int(month), int(date))
+            if d.date() > datetime.now().date():
+                raise ValidationError('Future Date Entered!')
         except ValueError:
             raise ValidationError('Invalid date entered')
         except TypeError:

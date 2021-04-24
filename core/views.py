@@ -1,3 +1,4 @@
+import os
 import urllib
 from datetime import datetime
 
@@ -17,7 +18,7 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 
 def index(request):
     link = None
-    df_html = None
+    all_stocks = None
     if request.method == 'POST':
         form = DateForm(request.POST)
         if form.is_valid():
@@ -31,9 +32,9 @@ def index(request):
                 df = pd.DataFrame(columns=['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE'])
                 for i, val in enumerate(match_keys, start=1):
                     df.loc[i] = [x.decode() for x in r.hmget(val, 'NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE')]
-                df_html = df.to_html()
-                print('HELLOO')
-                return render(request, 'days.html', {'f': form, 'link': link, 'df': df_html})
+                # df_html = df.to_html()
+                all_stocks = df.T.to_dict().values()
+                return render(request, 'ui.html', {'f': form, 'link': link, 'errorText': '', 'all_stocks': all_stocks})
 
             link = 'https://www.bseindia.com/download/BhavCopy/Equity/EQ{}_CSV.ZIP'.format(rep)
             headers = {
@@ -42,7 +43,9 @@ def index(request):
             }
             response = requests.get(link, allow_redirects=True, headers=headers)
             if not response.ok:
-                return render(request, 'days.html', {'f': DateForm(), 'link': None, 'df': 'Bad ZIP'})
+                return render(request, 'ui.html', {'f': DateForm(), 'link': None,
+                                                     'errorText': 'Bhavcopy not found for {}'.format(rep),
+                                                     'all_stocks': []})
             with open('./exp/EQ{}.zip'.format(rep), 'wb') as f:
                 f.write(response.content)
 
@@ -59,12 +62,16 @@ def index(request):
                          'LOW': row['LOW'],
                          'CLOSE': row['CLOSE']})
             df.rename(columns={'SC_NAME': 'NAME'}, inplace=True)
-            df_html = df[['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE']].to_html()
+            # df_html = df[['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE']].to_html()
+            all_stocks = df[['NAME', 'OPEN', 'LOW', 'HIGH', 'CLOSE']].T.to_dict().values()
+
+            os.remove('./exp/EQ{}.csv'.format(rep))
+            os.remove('./exp/EQ{}.zip'.format(rep))
 
     else:
         form = DateForm()
 
-    return render(request, 'days.html', {'f': form, 'link': link, 'df': df_html})
+    return render(request, 'ui.html', {'f': form, 'link': link, 'errorText': '', 'all_stocks': all_stocks})
 # https://www.bseindia.com/download/BhavCopy/Equity/.ZIP
 
 # https://www.bseindia.com/download/BhavCopy/Equity/010403_CSV.ZIP

@@ -1,0 +1,97 @@
+{% extends 'masterpage.html' %}
+{% block content %}
+<div id="app">
+    <p> [[ title ]] </p>
+    <form action="/" method="post">
+        {% csrf_token %}
+        {{ f }}
+        <input type="submit" value="Load CSV">
+    </form>
+    {% if not errorText %}
+    <div class="search-and-export-wrapper">
+        <label>Search: </label>
+        <input type="text" v-model="search" placeholder="Search title.."/>
+        <button @click="export_to_csv(filteredList)">Export to CSV</button>
+    </div>
+
+    <div class="wrapper">
+
+        <table border="1" class="dataframe">
+          <thead>
+            <tr style="text-align: right;">
+              <th></th>
+              <th>NAME</th>
+              <th>OPEN</th>
+              <th>HIGH</th>
+              <th>LOW</th>
+              <th>CLOSE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(stock, index) in filteredList">
+              <td>[[ index + 1 ]]</td>
+              <td>[[ stock.name ]]</td>
+              <td>[[ stock.open ]]</td>
+              <td>[[ stock.low ]]</td>
+              <td>[[ stock.high ]]</td>
+              <td>[[ stock.close ]]</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+    {%else%}
+    <p>{{errorText}}</p>
+    {%endif%}
+
+</div>
+<script>
+class Stock {
+    constructor(name, open, low, high, close) {
+        this.name = name;
+        this.open = open;
+        this.low = low;
+        this.high = high;
+        this.close = close;
+    }
+
+}
+new Vue({
+  delimiters: ['[[', ']]'],
+  el: '#app',
+  data: {
+    search: '',
+    title: 'Bhavcopy downloader and visualizer',
+    stockList: [
+        {% for stock in all_stocks %}
+            new Stock('{{stock.NAME}}', {{stock.OPEN}}, {{stock.LOW}}, {{stock.HIGH}}, {{stock.CLOSE}}),
+        {% empty %}
+        {% endfor %}
+    ]
+  },
+  computed: {
+    filteredList() {
+      return this.stockList.filter(stock => {
+        return stock.name.toLowerCase().includes(this.search.toLowerCase())
+      })
+    }
+  },
+  methods: {
+    export_to_csv: function(filteredList) {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += [
+        Object.keys(filteredList[0]).join(";"),
+        ...filteredList.map(item => Object.values(item).join(";"))
+      ]
+        .join("\n")
+        .replace(/(^\[)|(\]$)/gm, "");
+
+      const data = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", data);
+      link.setAttribute("download", "export.csv");
+      link.click();
+    }
+  }
+})
+</script>
+{% endblock %}
