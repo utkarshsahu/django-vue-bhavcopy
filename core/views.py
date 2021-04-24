@@ -46,11 +46,11 @@ def index(request):
                 return render(request, 'ui.html', {'f': DateForm(), 'link': None,
                                                      'errorText': 'Bhavcopy not found for {}'.format(rep),
                                                      'all_stocks': []})
-            with open('./exp/EQ{}.zip'.format(rep), 'wb') as f:
+            with open('EQ{}.zip'.format(rep), 'wb') as f:
                 f.write(response.content)
 
             with zipfile.ZipFile('EQ{}.zip'.format(rep), 'r') as zip_ref:
-                zip_ref.extractall('./exp')
+                zip_ref.extractall('.')
 
             df = pd.read_csv('EQ{}.csv'.format(rep))
 
