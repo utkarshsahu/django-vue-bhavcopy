@@ -51,8 +51,8 @@ def index(request):
 
             with zipfile.ZipFile('EQ{}.zip'.format(rep), 'r') as zip_ref:
                 zip_ref.extractall('.')
-
-            df = pd.read_csv('EQ{}.csv'.format(rep))
+            print(os.listdir('.'))
+            df = pd.read_csv('./EQ{}.csv'.format(rep))
 
             for _, row in df.iterrows():
                 r.hmset('{}:{}'.format(rep, row['SC_NAME'].strip()),
