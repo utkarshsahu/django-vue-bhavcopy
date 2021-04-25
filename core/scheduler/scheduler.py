@@ -90,7 +90,7 @@ def start():
     scheduler = BackgroundScheduler()
     scheduler.add_jobstore(DjangoJobStore(), "default")
     # run this job every 24 hours
-    scheduler.add_job(download_bhavcopy, 'cron', hour=18, timezone='Asia/Kolkata',
+    scheduler.add_job(download_bhavcopy, 'cron', hour=18, minute=0, timezone='Asia/Kolkata',
                       day_of_week='mon-fri', name='clean_accounts', jobstore='default')
     register_events(scheduler)
     scheduler.start()
