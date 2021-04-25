@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytz
 import requests
+from django.core.exceptions import ValidationError
 from django.shortcuts import render
 import pandas as pd
 
@@ -25,10 +26,12 @@ def index(request):
             year = form.cleaned_data['year']
             rep = datetime(int(year), int(month), int(date))
             return render_date(request, rep, form)
+
     else:
         form = DateForm()
-        rep = prev_n_weekday(datetime.now(tz=pytz.timezone('Asia/Kolkata')).date(), n=1)
+        rep = prev_n_weekday(datetime.now(tz=pytz.timezone('Asia/Kolkata')).date(), n=0)
         return render_date(request, rep, form)
+    return render(request, 'ui.html', {'f': form, 'errorText': 'Date is not valid!'})
 
 
 def render_date(request, date_obj, form):
