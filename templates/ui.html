@@ -5,15 +5,17 @@
     <form action="/" method="post">
         {% csrf_token %}
         {{ f.as_table }}
-        <input type="submit" value="Load CSV">
+        <input type="submit" value="Load CSV" style="display: inline-block;">
     </form>
     {% if not errorText %}
     <div class="search-and-export-wrapper">
         <label>Search: </label>
-        <input type="text" v-model="search" placeholder="Search title.."/>
+        <input type="text" v-model="search" placeholder="Search by name.." style="display:inline-block;"/>
         <button @click="export_to_csv(filteredList)">Export to CSV</button>
     </div>
-
+    <div>
+        <h3>Bhavcopy for date: {{currentDate}}</h3>
+    </div>
     <div class="wrapper">
 
         <table border="1" class="dataframe">
